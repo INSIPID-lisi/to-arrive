@@ -1,6 +1,6 @@
 package com.insipidknight.toarrive.user;
 
-import client.LocationClient;
+import client.com.insipidknight.api.LocationClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.service.registry.ImportHttpServices;

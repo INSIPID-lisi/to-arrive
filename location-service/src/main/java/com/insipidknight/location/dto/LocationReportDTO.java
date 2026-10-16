@@ -1,4 +1,4 @@
-package com.insipidknight.locationservice.dto;
+package com.insipidknight.location.dto;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

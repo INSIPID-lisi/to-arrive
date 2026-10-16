@@ -1,8 +1,8 @@
-package com.insipidknight.locationservice.service;
+package com.insipidknight.location.service;
 
-import com.insipidknight.locationservice.entity.Location;
-import com.insipidknight.locationservice.vo.DriverLocationVO;
-import com.insipidknight.locationservice.vo.NearbyDriverVO;
+import com.insipidknight.location.entity.Location;
+import com.insipidknight.location.vo.DriverLocationVO;
+import com.insipidknight.location.vo.NearbyDriverVO;
 import com.insipidknight.toarrive.common.exception.BusinessException;
 import com.insipidknight.toarrive.common.exception.ErrorCode;
 

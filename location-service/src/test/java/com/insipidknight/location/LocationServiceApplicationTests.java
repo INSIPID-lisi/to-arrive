@@ -1,4 +1,4 @@
-package com.insipidknight.locationservice;
+package com.insipidknight.location;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

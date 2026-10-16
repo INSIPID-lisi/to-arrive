@@ -1,7 +1,7 @@
-package com.insipidknight.locationservice.controller;
+package com.insipidknight.location.controller;
 
 
-import com.insipidknight.locationservice.service.LocationService;
+import com.insipidknight.location.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;

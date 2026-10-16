@@ -1,4 +1,4 @@
-package com.insipidknight.locationservice.vo;
+package com.insipidknight.location.vo;
 
 import lombok.Data;
 
