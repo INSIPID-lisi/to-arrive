@@ -21,7 +21,10 @@ spring:
           max-idle: 8
           min-idle: 0
           max-wait: 1000ms
-
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
 app:
   jwt:
     secret: ${ta.jwt.secret}

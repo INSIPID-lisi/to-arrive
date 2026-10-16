@@ -1,0 +1,17 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: push-service
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+
+app:
+  jwt:
+    secret: ${ta.jwt.secret}
+    expiration: 43200000  # 12小时 = 12 * 60 * 60 * 1000

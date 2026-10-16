@@ -6,7 +6,10 @@ spring:
     name: location-service
   profiles:
     active: dev
-
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
 app:
   jwt:
     secret: ${ta.jwt.secret}
