@@ -9,7 +9,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -22,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * 提供JWT令牌的生成和验证功能
  */
 @Slf4j
-@Component
 public class JwtUtil {
 
     @Value("${app.jwt.secret}")

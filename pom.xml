@@ -20,6 +20,8 @@
         <module>common-web</module>
         <module>common-mybatis</module>
         <module>user-service</module>
+        <module>location-service</module>
+        <module>api</module>
     </modules>
 
     <properties>
@@ -74,6 +76,12 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
 

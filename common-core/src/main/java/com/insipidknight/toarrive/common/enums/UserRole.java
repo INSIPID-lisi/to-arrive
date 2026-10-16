@@ -1,5 +1,6 @@
 package com.insipidknight.toarrive.common.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.Getter;
 
 @Getter
@@ -9,6 +10,7 @@ public enum UserRole {
     DRIVER(2, "司机"),
     ADMIN(3, "管理员");
 
+    @EnumValue
     private final Integer code;
     private final String desc;
 

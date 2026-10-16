@@ -3,6 +3,7 @@ package com.insipidknight.toarrive.common.autoconfigure;
 import com.insipidknight.toarrive.common.config.WebMvcConfig;
 import com.insipidknight.toarrive.common.exception.GlobalExceptionHandler;
 import com.insipidknight.toarrive.common.interceptor.JwtAuthInterceptor;
+import com.insipidknight.toarrive.common.util.JwtUtil;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,13 @@ import tools.jackson.databind.ser.std.ToStringSerializer;
 @AutoConfiguration
 @EnableScheduling
 public class CommonWebAutoConfiguration {
+
+    // JwtUtil 在 common-core 的 brother 包里，服务组件扫描扫不到，必须在这里显式注册，
+    // 否则 @PostConstruct 不执行、签名密钥为 null，登录/鉴权会在运行时失败
+    @Bean
+    public JwtUtil jwtUtil() {
+        return new JwtUtil();
+    }
 
     @Bean
     public JwtAuthInterceptor jwtAuthInterceptor() {

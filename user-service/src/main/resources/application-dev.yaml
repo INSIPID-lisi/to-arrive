@@ -1,0 +1,11 @@
+ta:
+  db:
+    host: localhost
+    port: 3307
+    name: to_arrive_db
+    username: root
+    password: ${DB_PASSWORD}
+  redis:
+    password: ${DB_PASSWORD}
+  jwt:
+    secret: ${JWT_DEV_SECRET}
