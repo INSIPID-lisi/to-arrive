@@ -1,10 +1,10 @@
-package com.insipidknight.location;
+package com.insipidknight.toarrive.payment;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class LocationServiceApplicationTests {
+class PaymentServiceApplicationTests {
 
     @Test
     void contextLoads() {

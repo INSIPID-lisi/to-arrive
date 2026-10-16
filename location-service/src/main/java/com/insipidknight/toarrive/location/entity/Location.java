@@ -1,4 +1,4 @@
-package com.insipidknight.location.entity;
+package com.insipidknight.toarrive.location.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

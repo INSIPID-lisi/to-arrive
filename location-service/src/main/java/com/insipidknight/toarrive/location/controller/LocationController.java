@@ -1,9 +1,9 @@
-package com.insipidknight.location.controller;
+package com.insipidknight.toarrive.location.controller;
 
-import com.insipidknight.location.dto.LocationReportDTO;
-import com.insipidknight.location.service.LocationService;
-import com.insipidknight.location.vo.DriverLocationVO;
-import com.insipidknight.location.vo.NearbyDriverVO;
+import com.insipidknight.toarrive.location.dto.LocationReportDTO;
+import com.insipidknight.toarrive.location.service.LocationService;
+import com.insipidknight.toarrive.location.vo.DriverLocationVO;
+import com.insipidknight.toarrive.location.vo.NearbyDriverVO;
 import com.insipidknight.toarrive.common.Result;
 import com.insipidknight.toarrive.common.context.UserContext;
 import com.insipidknight.toarrive.common.enums.UserRole;

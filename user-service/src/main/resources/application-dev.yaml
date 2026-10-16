@@ -2,7 +2,7 @@ ta:
   db:
     host: localhost
     port: 3307
-    name: to_arrive_db
+    name: user_db
     username: root
     password: ${DB_PASSWORD}
   redis:

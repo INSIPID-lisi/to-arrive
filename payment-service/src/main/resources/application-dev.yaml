@@ -1,0 +1,11 @@
+ta:
+  db:
+    host: 127.0.0.1
+    port: 3307
+    name: payment_db
+    username: root
+    password: ${DB_PASSWORD}
+  redis:
+    password: ${DB_PASSWORD}
+  jwt:
+    secret: ${JWT_DEV_SECRET}
