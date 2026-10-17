@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/auth/**,/api/user/**,/api/driver/**,/api/admin/**
+
+            - id: location-service
+              uri: lb://location-service
+              predicates:
+                - Path=/api/location/**
+
+            - id: payment-service
+              uri: lb://payment-service
+              predicates:
+                - Path=/api/wallet/**
+
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api/order/**
+
+            # WebSocket 不走 /api 前缀，需用 lb:ws 形式让网关完成协议升级
+            - id: push-service-ws
+              uri: lb:ws://push-service
+              predicates:
+                - Path=/ws

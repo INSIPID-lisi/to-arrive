@@ -11,6 +11,6 @@ import org.springframework.web.service.annotation.HttpExchange;
 public interface PushClient {
 
     @PostMapping("/user/{userId}")
-    Result<Void> sendToUser(@PathVariable("userId") Long userId, @RequestBody WsMessage message);
+    Result<Void> sendToUser(@PathVariable Long userId, @RequestBody WsMessage message);
 }
 

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.service.registry.ImportHttpServices;
 
 @ImportHttpServices(
-        group = "location",
+        group = "location-service",
         types = LocationClient.class
 )
 @SpringBootApplication

@@ -25,6 +25,7 @@
         <module>push-service</module>
         <module>order-service</module>
         <module>api</module>
+        <module>gateway-service</module>
     </modules>
 
     <properties>

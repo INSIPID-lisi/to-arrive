@@ -10,8 +10,8 @@ import org.springframework.web.service.annotation.HttpExchange;
 public interface UserClient {
 
     @GetMapping("/driver/{driverId}/require-online")
-    Result<Void> requireOnline(@PathVariable("driverId") Long driverId);
+    Result<Void> requireOnline(@PathVariable Long driverId);
 
     @GetMapping("/{userId}/brief")
-    Result<UserBriefDTO> buildBrief(@PathVariable("userId") Long userId);
+    Result<UserBriefDTO> buildBrief(@PathVariable Long userId);
 }
