@@ -6,19 +6,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * JWT工具类
- * 提供JWT令牌的生成和验证功能
+ * JWT 工具类。实例由 Spring 管理：网关与 user-service 各自注入。
  */
 @Slf4j
 public class JwtUtil {
@@ -29,39 +26,29 @@ public class JwtUtil {
     @Value("${app.jwt.expiration}")
     private long expirationTime;
 
-    private static SecretKey secretKey;
-
-    /**
-     * -- GETTER --
-     *  获取令牌有效期（毫秒），对应 app.jwt.expiration 配置
-     */
-    @Getter
-    private static long expiration;
-
-    private static final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();
+    private SecretKey secretKey;
 
     @PostConstruct
     public void init() {
-        secretKey = Keys.hmacShaKeyFor(mySecret.getBytes());
-        expiration = expirationTime;
+        secretKey = Keys.hmacShaKeyFor(mySecret.getBytes(StandardCharsets.UTF_8));
         log.info("JWT密钥初始化成功");
     }
 
-    public static String generateJwt(Map<String, Object> data) {
+    public String generateJwt(Map<String, Object> data) {
         log.debug("开始生成JWT令牌，数据: {}", data);
 
         return Jwts.builder()
                 .signWith(secretKey)
                 .claims(data)
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .compact();
     }
 
     /**
      * 解析令牌的声明，令牌缺失、过期或非法时返回 null
      */
-    public static Claims parseToken(String token) {
-        if (token == null || blacklistedTokens.contains(token)) {
+    public Claims parseToken(String token) {
+        if (token == null) {
             return null;
         }
         try {
@@ -72,15 +59,13 @@ public class JwtUtil {
         }
     }
 
-
     /**
-     * 解析和验证JWT令牌
+     * 解析和验证 JWT 令牌
      *
-     * @param token JWT令牌字符串
-     * @return Claims对象，包含JWT中的所有声明
+     * @param token JWT 令牌字符串
+     * @return Claims 对象，包含 JWT 中的所有声明
      */
-    public static Claims parseAndValidateJwt(String token) {
-
+    public Claims parseAndValidateJwt(String token) {
         log.debug("开始解析和验证JWT令牌");
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -88,15 +73,14 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
     /**
-     * 校验Token的合法性（签名、有效期等）
-     * @param token 待校验的JWT Token
-     * @return 校验结果
+     * 校验 Token 的合法性（签名、有效期等）
      */
-    public static boolean verifyToken(String token) {
+    public boolean verifyToken(String token) {
         log.debug("开始校验Token的合法性");
 
-        if (token == null || blacklistedTokens.contains(token)) {
+        if (token == null) {
             return false;
         }
 
@@ -116,16 +100,11 @@ public class JwtUtil {
 
         return false;
     }
+
     /**
-     * 将Token加入黑名单（登出）
+     * 令牌有效期（毫秒），对应 app.jwt.expiration 配置
      */
-    public static void invalidateToken(String token) {
-        if (token != null) {
-            blacklistedTokens.add(token);
-            log.info("Token已加入黑名单");
-        }
+    public long getExpiration() {
+        return expirationTime;
     }
-
 }
-
-  

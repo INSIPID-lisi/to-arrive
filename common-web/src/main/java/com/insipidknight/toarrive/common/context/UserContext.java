@@ -5,6 +5,7 @@ import com.insipidknight.toarrive.common.enums.UserRole;
 public class UserContext {
     private static final ThreadLocal<Long> USER_ID = new ThreadLocal<>();
     private static final ThreadLocal<UserRole> ROLE = new ThreadLocal<>();
+    private static final ThreadLocal<String> TOKEN_ID = new ThreadLocal<>();
 
     private UserContext() {
     }
@@ -25,8 +26,17 @@ public class UserContext {
         return ROLE.get();
     }
 
+    public static void setTokenId(String tokenId) {
+        TOKEN_ID.set(tokenId);
+    }
+
+    public static String getTokenId() {
+        return TOKEN_ID.get();
+    }
+
     public static void clear() {
         USER_ID.remove();
         ROLE.remove();
+        TOKEN_ID.remove();
     }
 }

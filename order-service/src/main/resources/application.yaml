@@ -26,6 +26,8 @@ spring:
       discovery:
         server-addr: localhost:8848
 app:
+  auth:
+    mode: gateway
   jwt:
     secret: ${ta.jwt.secret}
     expiration: 43200000  # 12小时 = 12 * 60 * 60 * 1000

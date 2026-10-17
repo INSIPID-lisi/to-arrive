@@ -22,6 +22,7 @@ public class AdminUserService {
 
     private final AuthMapper authMapper;
     private final UserProfileService userProfileService;
+    private final TokenSessionService tokenSessionService;
 
     public PageVO<AdminUserVO> listUsers(UserRole role, UserStatus status, String phoneKeyword, int page, int size) {
         int safePage = Math.max(page, 1);
@@ -50,6 +51,7 @@ public class AdminUserService {
             throw new BusinessException("不能禁用管理员账号");
         }
         authMapper.updateStatus(userId, UserStatus.DISABLED.getValue());
+        tokenSessionService.revokeAll(userId);
     }
 
     public void enable(Long userId) {

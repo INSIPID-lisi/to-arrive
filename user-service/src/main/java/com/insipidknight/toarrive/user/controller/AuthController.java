@@ -34,6 +34,12 @@ public class AuthController {
         return Result.success(vo);
     }
 
+    @PostMapping("/logout")
+    public Result<Void> logout() {
+        authService.logout(UserContext.getTokenId());
+        return Result.success(null);
+    }
+
     @PostMapping("/cancel")
     public Result<Void> cancel() {
         authService.cancel(UserContext.getUserId());

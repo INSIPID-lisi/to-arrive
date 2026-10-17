@@ -2,6 +2,7 @@ package com.insipidknight.toarrive.common.autoconfigure;
 
 import com.insipidknight.toarrive.common.config.WebMvcConfig;
 import com.insipidknight.toarrive.common.exception.GlobalExceptionHandler;
+import com.insipidknight.toarrive.common.interceptor.GatewayIdentityInterceptor;
 import com.insipidknight.toarrive.common.interceptor.JwtAuthInterceptor;
 import com.insipidknight.toarrive.common.util.JwtUtil;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -23,13 +24,19 @@ public class CommonWebAutoConfiguration {
     }
 
     @Bean
-    public JwtAuthInterceptor jwtAuthInterceptor() {
-        return new JwtAuthInterceptor();
+    public JwtAuthInterceptor jwtAuthInterceptor(JwtUtil jwtUtil) {
+        return new JwtAuthInterceptor(jwtUtil);
     }
 
     @Bean
-    public WebMvcConfig webMvcConfig(JwtAuthInterceptor jwtAuthInterceptor) {
-        return new WebMvcConfig(jwtAuthInterceptor);
+    public GatewayIdentityInterceptor gatewayIdentityInterceptor() {
+        return new GatewayIdentityInterceptor();
+    }
+
+    @Bean
+    public WebMvcConfig webMvcConfig(JwtAuthInterceptor jwtAuthInterceptor,
+                                     GatewayIdentityInterceptor gatewayIdentityInterceptor) {
+        return new WebMvcConfig(jwtAuthInterceptor, gatewayIdentityInterceptor);
     }
 
     @Bean

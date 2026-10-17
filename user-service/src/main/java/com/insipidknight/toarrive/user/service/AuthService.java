@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -28,6 +29,8 @@ public class AuthService {
 
     private final AuthMapper authMapper;
     private final UserProfileService userProfileService;
+    private final JwtUtil jwtUtil;
+    private final TokenSessionService tokenSessionService;
 
     @Transactional
     public RegisterVO register(RegisterDTO registerDTO) {
@@ -71,21 +74,33 @@ public class AuthService {
             throw new BusinessException("账号已注销");
         }
 
+        String tokenId = UUID.randomUUID().toString();
+        long tokenVersion = tokenSessionService.currentVersion(user.getUserId());
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getUserId());
         claims.put("uid", user.getUid());
         claims.put("role", user.getRole().getValue());
-        String accessToken = JwtUtil.generateJwt(claims);
+        claims.put("jti", tokenId);
+        claims.put("ver", tokenVersion);
+        String accessToken = jwtUtil.generateJwt(claims);
+
+        tokenSessionService.saveSession(user.getUserId(), tokenId, jwtUtil.getExpiration());
 
         LoginVO vo = new LoginVO();
         vo.setAccessToken(accessToken);
-        vo.setExpiresIn(JwtUtil.getExpiration());
+        vo.setExpiresIn(jwtUtil.getExpiration());
 
         vo.setUser(userProfileService.buildBrief(user));
 
         log.info("用户登录成功, userId={}, phone={}", user.getUserId(), user.getPhone());
 
         return vo;
+    }
+
+    public void logout(String tokenId) {
+        tokenSessionService.removeSession(tokenId);
+        log.info("用户登出, tokenId={}", tokenId);
     }
 
     @Transactional
@@ -101,6 +116,7 @@ public class AuthService {
 
         authMapper.deleteById(userId);
         userProfileService.removeByUserId(userId);
+        tokenSessionService.revokeAll(userId);
 
         log.info("用户注销成功, userId={}, phone={}", user.getUserId(), user.getPhone());
     }
@@ -118,6 +134,7 @@ public class AuthService {
 
         user.setPassword(EncryptUtil.encrypt(newPassword));
         authMapper.updateById(user);
+        tokenSessionService.revokeAll(userId);
 
         log.info("用户修改密码成功, userId={}", userId);
     }

@@ -1,7 +1,9 @@
 package com.insipidknight.toarrive.push;
 
+import com.insipidknight.toarrive.common.auth.AuthHeaders;
 import com.insipidknight.toarrive.common.util.JwtUtil;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -14,17 +16,27 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * 握手鉴权：WebSocket 无法携带自定义头，故从 query 参数 ?token= 解析 JWT。
+ * 握手鉴权：优先信任网关注入的 X-User-Id；
+ * 直连服务时回退到 query 参数 ?token=（迁移期兼容）。
  */
 @Component
+@RequiredArgsConstructor
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     public static final String ATTR_USER_ID = "userId";
 
+    private final JwtUtil jwtUtil;
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        Claims claims = JwtUtil.parseToken(extractToken(request.getURI().getQuery()));
+        String userId = request.getHeaders().getFirst(AuthHeaders.USER_ID);
+        if (userId != null && !userId.isBlank()) {
+            attributes.put(ATTR_USER_ID, Long.valueOf(userId));
+            return true;
+        }
+
+        Claims claims = jwtUtil.parseToken(extractToken(request.getURI().getQuery()));
         if (claims == null || claims.get("userId") == null) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;

@@ -28,6 +28,7 @@ public class DriverService {
     private final DriverMapper driverMapper;
     private final AuthMapper authMapper;
     private final LocationClient locationClient;
+    private final TokenSessionService tokenSessionService;
 
     public DriverApplyVO apply(Long userId, DriverApplyDTO dto) {
         if (driverMapper.selectByDriverId(userId) != null) {
@@ -104,6 +105,8 @@ public class DriverService {
             throw new BusinessException("该申请已审核，请勿重复操作");
         }
         authMapper.updateRole(driverId, UserRole.DRIVER.getValue());
+        // 角色已变化，旧 token 里的 role 不再可信，强制重新登录
+        tokenSessionService.revokeAll(driverId);
     }
 
     @Transactional
