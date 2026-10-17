@@ -1,6 +1,6 @@
 package com.insipidknight.toarrive.user.service;
 
-import client.com.insipidknight.api.LocationClient;
+import com.insipidknight.toarrive.api.client.LocationClient;
 import com.insipidknight.toarrive.common.exception.BusinessException;
 import com.insipidknight.toarrive.user.dto.DriverApplyDTO;
 import com.insipidknight.toarrive.user.entity.Driver;

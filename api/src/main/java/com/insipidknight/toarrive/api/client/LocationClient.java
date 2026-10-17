@@ -1,4 +1,4 @@
-package client.com.insipidknight.api;
+package com.insipidknight.toarrive.api.client;
 
 
 

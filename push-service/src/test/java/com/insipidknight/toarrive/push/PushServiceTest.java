@@ -1,5 +1,6 @@
 package com.insipidknight.toarrive.push;
 
+import com.insipidknight.toarrive.api.dto.WsMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

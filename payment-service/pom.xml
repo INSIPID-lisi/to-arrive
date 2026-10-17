@@ -29,6 +29,11 @@
 
         <dependency>
             <groupId>com.insipidknight</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.insipidknight</groupId>
             <artifactId>common-web</artifactId>
             <version>${project.version}</version>
         </dependency>

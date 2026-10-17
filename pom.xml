@@ -23,6 +23,7 @@
         <module>location-service</module>
         <module>payment-service</module>
         <module>push-service</module>
+        <module>order-service</module>
         <module>api</module>
     </modules>
 
