@@ -25,9 +25,17 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8089
+      eager: true
+      http-method-specify: true
 app:
   auth:
     mode: gateway
   jwt:
     secret: ${ta.jwt.secret}
     expiration: 43200000  # 12小时 = 12 * 60 * 60 * 1000
+  dispatch:
+    radius-km: 3          # 派单搜索半径
+    max-drivers: 10       # 单次最多推送的候选司机数

@@ -25,9 +25,16 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8089
+      eager: true
+      http-method-specify: true
 app:
   auth:
     mode: gateway
   jwt:
     secret: ${ta.jwt.secret}
     expiration: 43200000  # 12小时 = 12 * 60 * 60 * 1000
+  commission:
+    rate: 0.20            # 平台抽成比例，20%

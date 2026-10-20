@@ -36,6 +36,10 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
 
         <!-- 响应式 Redis：网关在事件循环中校验 token 会话，不能用阻塞客户端 -->
         <dependency>
