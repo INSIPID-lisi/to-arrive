@@ -7,7 +7,8 @@ import lombok.Getter;
 public enum PayStatus implements IEnum<Integer> {
 
     UNPAID(0, "未支付"),
-    PAID(1, "已支付");
+    PAID(1, "已支付"),
+    PAYING(2, "支付中");
 
     private final Integer code;
     private final String desc;

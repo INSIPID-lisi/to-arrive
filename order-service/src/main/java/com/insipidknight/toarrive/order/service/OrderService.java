@@ -1,7 +1,9 @@
 package com.insipidknight.toarrive.order.service;
 
+import com.insipidknight.toarrive.api.client.LocationClient;
 import com.insipidknight.toarrive.api.client.PushClient;
 import com.insipidknight.toarrive.api.client.UserClient;
+import com.insipidknight.toarrive.api.dto.NearbyDriverDTO;
 import com.insipidknight.toarrive.api.dto.UserBriefDTO;
 import com.insipidknight.toarrive.api.dto.WsMessage;
 import com.insipidknight.toarrive.api.util.ClientResults;
@@ -16,17 +18,21 @@ import com.insipidknight.toarrive.order.entity.enums.OrderStatus;
 import com.insipidknight.toarrive.order.mapper.OrderMapper;
 import com.insipidknight.toarrive.order.pricing.FareResult;
 import com.insipidknight.toarrive.order.pricing.PricingService;
+import com.insipidknight.toarrive.order.vo.DispatchOrderVO;
 import com.insipidknight.toarrive.order.vo.OrderCreateVO;
 import com.insipidknight.toarrive.order.vo.OrderVO;
 import com.insipidknight.toarrive.order.vo.PendingOrderVO;
 import com.insipidknight.toarrive.common.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -34,12 +40,20 @@ import java.util.List;
 public class OrderService {
 
     private static final double METERS_PER_KM = 1000d;
+    private static final double DEGREES_PER_KM = 111.0d;
     private static final int TIMEOUT_BATCH_LIMIT = 500;
 
     private final OrderMapper orderMapper;
     private final UserClient userClient;
     private final PricingService pricingService;
     private final PushClient pushClient;
+    private final LocationClient locationClient;
+
+    @Value("${app.dispatch.radius-km:3}")
+    private double dispatchRadiusKm;
+
+    @Value("${app.dispatch.max-drivers:10}")
+    private int dispatchMaxDrivers;
 
     public OrderCreateVO createOrder(Long userId, OrderCreateDTO dto) {
 
@@ -62,9 +76,41 @@ public class OrderService {
                 dto.getStartLng(), dto.getStartLat(), dto.getEndLng(), dto.getEndLat()).price());
 
         orderMapper.insert(order);
-        //TODO 派单
+        dispatch(order);
 
         return new OrderCreateVO(order);
+    }
+
+    /**
+     * 广播派单：向起点附近的在线司机推送订单，排除已有进行中订单的司机。
+     * 派单失败只记日志，不影响下单结果，订单仍可在抢单池中被主动拉取。
+     */
+    private void dispatch(Order order) {
+        try {
+            List<NearbyDriverDTO> candidates = ClientResults.unwrap(locationClient.nearbyDrivers(
+                    order.getStartLng(), order.getStartLat(), dispatchRadiusKm, dispatchMaxDrivers));
+            if (candidates == null || candidates.isEmpty()) {
+                return;
+            }
+            List<Long> driverIds = candidates.stream().map(NearbyDriverDTO::driverId).toList();
+            Set<Long> busyDriverIds = new HashSet<>(orderMapper.selectBusyDriverIds(driverIds));
+
+            for (NearbyDriverDTO candidate : candidates) {
+                if (busyDriverIds.contains(candidate.driverId())) {
+                    continue;
+                }
+                try {
+                    ClientResults.unwrap(pushClient.sendToUser(candidate.driverId(),
+                            new WsMessage("ORDER_DISPATCH", order.getOrderNo(), order.getStatus().name(),
+                                    new DispatchOrderVO(order, candidate.distanceMeters()))));
+                } catch (Exception e) {
+                    log.warn("派单推送失败 orderNo={}, driverId={}: {}",
+                            order.getOrderNo(), candidate.driverId(), e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.warn("派单失败 orderNo={}: {}", order.getOrderNo(), e.getMessage());
+        }
     }
 
     public OrderVO getByOrderNo(String orderNo, Long userId) {
@@ -172,13 +218,23 @@ public class OrderService {
         return orders.stream().map(OrderVO::new).toList();
     }
 
+    /**
+     * 抢单池：先用经纬度 bounding box 在库里粗筛，再在内存里按精确距离过滤排序。
+     * 避免「先 LIMIT 再过滤距离」导致半径内的订单被挤出结果集。
+     */
     public List<PendingOrderVO> listPendingNearby(Double lng, Double lat, Double radiusKm, int limit) {
         double radiusMeters = radiusKm * METERS_PER_KM;
-        return orderMapper.selectPending(limit).stream()
+        double latDelta = radiusKm / DEGREES_PER_KM;
+        double lngDelta = radiusKm / (DEGREES_PER_KM * Math.max(Math.cos(Math.toRadians(lat)), 0.01d));
+        int candidateLimit = Math.max(limit * 5, limit);
+
+        return orderMapper.selectPendingNearby(
+                        lng - lngDelta, lng + lngDelta, lat - latDelta, lat + latDelta, candidateLimit).stream()
                 .map(order -> new PendingOrderVO(order, CalculateUtil.calculateDistance(
                         lng, lat, order.getStartLng(), order.getStartLat()).doubleValue() * METERS_PER_KM))
                 .filter(vo -> vo.getPickupDistanceMeters() <= radiusMeters)
                 .sorted(Comparator.comparingDouble(PendingOrderVO::getPickupDistanceMeters))
+                .limit(limit)
                 .toList();
     }
 

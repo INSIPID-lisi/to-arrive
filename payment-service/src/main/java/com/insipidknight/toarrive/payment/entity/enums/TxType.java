@@ -7,7 +7,9 @@ import lombok.Getter;
 public enum TxType implements IEnum<Integer> {
 
     RECHARGE(1, "充值"),
-    PAY(2, "支付");
+    PAY(2, "支付"),
+    DRIVER_INCOME(3, "司机收入"),
+    COMMISSION(4, "平台抽成");
 
     private final Integer code;
     private final String desc;

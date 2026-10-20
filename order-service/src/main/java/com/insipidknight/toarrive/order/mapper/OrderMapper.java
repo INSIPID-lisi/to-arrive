@@ -71,13 +71,38 @@ public interface OrderMapper extends BaseMapper<Order> {
                     @Param("actualPrice") BigDecimal actualPrice);
 
     /**
-     * 标记支付：仅订单所属乘客、已完成且未支付时可标记（原子），返回 0 行表示不可支付
+     * 抢占支付权：未支付 → 支付中（原子），返回 0 行表示已被并发请求处理
      */
-    @Update("UPDATE orders SET pay_status = 1, paid_at = NOW() " +
-            "WHERE id = #{orderId} AND passenger_id = #{passengerId} AND status = 5 " +
-            "AND pay_status = 0 AND delete_at = '1970-01-01 00:00:00'")
-    int markPaid(@Param("orderId") Long orderId,
-                 @Param("passengerId") Long passengerId);
+    @Update("UPDATE orders SET pay_status = 2, paying_at = NOW() " +
+            "WHERE id = #{orderId} AND status = 5 AND pay_status = 0 " +
+            "AND delete_at = '1970-01-01 00:00:00'")
+    int markPaying(@Param("orderId") Long orderId);
+
+    /**
+     * 支付中 → 已支付（原子）
+     */
+    @Update("UPDATE orders SET pay_status = 1, paid_at = NOW(), paying_at = NULL " +
+            "WHERE id = #{orderId} AND status = 5 AND pay_status = 2 " +
+            "AND delete_at = '1970-01-01 00:00:00'")
+    int confirmPaid(@Param("orderId") Long orderId);
+
+    /**
+     * 支付中 → 未支付（明确失败或超时补偿，原子）
+     */
+    @Update("UPDATE orders SET pay_status = 0, paying_at = NULL " +
+            "WHERE id = #{orderId} AND pay_status = 2 " +
+            "AND delete_at = '1970-01-01 00:00:00'")
+    int revertPaying(@Param("orderId") Long orderId);
+
+    /**
+     * 超过补偿水位仍停留在支付中的订单
+     */
+    @Select("SELECT * FROM orders " +
+            "WHERE pay_status = 2 AND paying_at < #{cutoff} " +
+            "AND delete_at = '1970-01-01 00:00:00' " +
+            "ORDER BY paying_at ASC LIMIT #{limit}")
+    List<Order> selectPayingBefore(@Param("cutoff") LocalDateTime cutoff,
+                                   @Param("limit") int limit);
 
     /**
      * 取消订单：status IN (1,2,3) → 6，仅乘客或所属司机可取消（原子）
@@ -102,6 +127,22 @@ public interface OrderMapper extends BaseMapper<Order> {
     int countActiveByDriver(@Param("driverId") Long driverId);
 
     /**
+     * 候选司机中当前有进行中订单的 ID，用于派单时排除忙碌司机
+     */
+    @Select("""
+            <script>
+            SELECT DISTINCT driver_id FROM orders
+            WHERE driver_id IN
+            <foreach collection="driverIds" item="driverId" open="(" separator="," close=")">
+                #{driverId}
+            </foreach>
+            AND status IN (2, 3, 4)
+            AND delete_at = '1970-01-01 00:00:00'
+            </script>
+            """)
+    List<Long> selectBusyDriverIds(@Param("driverIds") List<Long> driverIds);
+
+    /**
      * 乘客的订单列表（按创建时间倒序）
      */
     @Select("SELECT * FROM orders " +
@@ -122,13 +163,19 @@ public interface OrderMapper extends BaseMapper<Order> {
                                  @Param("limit") int limit);
 
     /**
-     * 待接单列表（抢单池，按创建时间倒序）
+     * 待接单列表（抢单池）：先按经纬度 bounding box 粗筛，避免先 LIMIT 后距离过滤导致漏单
      */
     @Select("SELECT * FROM orders " +
             "WHERE status = 1 " +
+            "AND start_lng BETWEEN #{minLng} AND #{maxLng} " +
+            "AND start_lat BETWEEN #{minLat} AND #{maxLat} " +
             "AND delete_at = '1970-01-01 00:00:00' " +
             "ORDER BY created_at DESC LIMIT #{limit}")
-    List<Order> selectPending(@Param("limit") int limit);
+    List<Order> selectPendingNearby(@Param("minLng") double minLng,
+                                    @Param("maxLng") double maxLng,
+                                    @Param("minLat") double minLat,
+                                    @Param("maxLat") double maxLat,
+                                    @Param("limit") int limit);
 
     /**
      * 待接单且已超时的订单（供系统超时取消扫描），按创建时间升序

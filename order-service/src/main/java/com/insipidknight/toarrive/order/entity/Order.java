@@ -48,6 +48,7 @@ public class Order {
     // 支付
     private PayStatus payStatus;
     private LocalDateTime paidAt;
+    private LocalDateTime payingAt;
 
     private String cancelReason;
     private CancelBy cancelBy;

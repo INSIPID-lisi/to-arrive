@@ -31,9 +31,14 @@ public class WalletService {
 
     @Transactional
     public BigDecimal recharge(Long userId, BigDecimal amount) {
+        return credit(userId, amount, TxType.RECHARGE, null, "钱包充值");
+    }
+
+    @Transactional
+    public BigDecimal credit(Long userId, BigDecimal amount, TxType type, String orderNo, String remark) {
         walletMapper.credit(userId, amount);
         BigDecimal balanceAfter = getBalance(userId);
-        record(userId, TxType.RECHARGE, amount, balanceAfter, null, "钱包充值");
+        record(userId, type, amount, balanceAfter, orderNo, remark);
         return balanceAfter;
     }
 

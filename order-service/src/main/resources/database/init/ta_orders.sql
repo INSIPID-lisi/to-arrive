@@ -34,6 +34,9 @@ CREATE TABLE `orders` (
   COMMENT='订单表';
 
 ALTER TABLE `orders`
-    ADD COLUMN `pay_status` TINYINT  NOT NULL DEFAULT 0 COMMENT '支付状态：0未支付 1已支付' AFTER `actual_price`,
+    ADD COLUMN `pay_status` TINYINT  NOT NULL DEFAULT 0 COMMENT '支付状态：0未支付 1已支付 2支付中' AFTER `actual_price`,
     ADD COLUMN `paid_at`    DATETIME DEFAULT NULL COMMENT '支付时间' AFTER `pay_status`;
+
+ALTER TABLE `orders`
+    ADD COLUMN `paying_at` DATETIME DEFAULT NULL COMMENT '支付发起时间（支付中状态使用）' AFTER `paid_at`;
 
