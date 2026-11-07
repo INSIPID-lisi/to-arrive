@@ -1,7 +1,10 @@
 package com.insipidknight.toarrive.user.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.insipidknight.toarrive.common.Result;
 import com.insipidknight.toarrive.common.context.UserContext;
+import com.insipidknight.toarrive.common.exception.ErrorCode;
 import com.insipidknight.toarrive.user.dto.ChangePasswordDTO;
 import com.insipidknight.toarrive.user.dto.LoginDTO;
 import com.insipidknight.toarrive.user.dto.RegisterDTO;
@@ -10,11 +13,13 @@ import com.insipidknight.toarrive.user.vo.LoginVO;
 import com.insipidknight.toarrive.user.vo.RegisterVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -29,9 +34,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @SentinelResource(value = "auth:login", blockHandler = "loginBlocked")
     public Result<LoginVO> login(@RequestBody @Valid LoginDTO loginDTO) {
         LoginVO vo = authService.login(loginDTO);
         return Result.success(vo);
+    }
+
+    public Result<LoginVO> loginBlocked(LoginDTO loginDTO, BlockException e) {
+        log.warn("登录熔断降级: {}", e.getClass().getSimpleName());
+        return Result.error(ErrorCode.SERVICE_UNAVAILABLE, "登录请求繁忙，请稍后重试");
     }
 
     @PostMapping("/logout")

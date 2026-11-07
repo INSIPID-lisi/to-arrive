@@ -1,6 +1,8 @@
 package com.insipidknight.toarrive.order.controller;
 
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.insipidknight.toarrive.common.Result;
 import com.insipidknight.toarrive.common.context.UserContext;
 import com.insipidknight.toarrive.common.enums.UserRole;
@@ -14,10 +16,12 @@ import com.insipidknight.toarrive.order.vo.OrderVO;
 import com.insipidknight.toarrive.order.vo.PendingOrderVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/order")
 @RequiredArgsConstructor
@@ -27,10 +31,16 @@ public class OrderController {
     private final PaymentService paymentService;
 
     @PostMapping
+    @SentinelResource(value = "order:create", blockHandler = "createBlocked")
     public Result<OrderCreateVO> createOrder(@RequestBody @Valid OrderCreateDTO orderCreateDTO) {
         Long userId = UserContext.getUserId();
         OrderCreateVO orderVO = orderService.createOrder(userId, orderCreateDTO);
         return Result.success(orderVO);
+    }
+
+    public Result<OrderCreateVO> createBlocked(OrderCreateDTO orderCreateDTO, BlockException e) {
+        log.warn("下单熔断降级: {}", e.getClass().getSimpleName());
+        return Result.error(ErrorCode.SERVICE_UNAVAILABLE, "下单请求繁忙，请稍后重试");
     }
 
     @GetMapping("/mine")
@@ -56,9 +66,15 @@ public class OrderController {
     }
 
     @PostMapping("/{orderNo}/accept")
+    @SentinelResource(value = "order:accept", blockHandler = "acceptBlocked")
     public Result<OrderVO> accept(@PathVariable String orderNo) {
         requireDriver();
         return Result.success(orderService.acceptOrder(orderNo, UserContext.getUserId()));
+    }
+
+    public Result<OrderVO> acceptBlocked(String orderNo, BlockException e) {
+        log.warn("抢单熔断降级 orderNo={}: {}", orderNo, e.getClass().getSimpleName());
+        return Result.error(ErrorCode.SERVICE_UNAVAILABLE, "抢单请求繁忙，请稍后重试");
     }
 
     @PostMapping("/{orderNo}/arrive")
@@ -86,10 +102,16 @@ public class OrderController {
     }
 
     @PostMapping("/{orderNo}/pay")
+    @SentinelResource(value = "order:pay", blockHandler = "payBlocked")
     public Result<OrderVO> pay(@PathVariable String orderNo) {
         Long userId = UserContext.getUserId();
         paymentService.payOrder(orderNo, userId);
         return Result.success(orderService.getByOrderNo(orderNo, userId));
+    }
+
+    public Result<OrderVO> payBlocked(String orderNo, BlockException e) {
+        log.warn("支付熔断降级 orderNo={}: {}", orderNo, e.getClass().getSimpleName());
+        return Result.error(ErrorCode.SERVICE_UNAVAILABLE, "支付请求繁忙，请稍后重试");
     }
 
     private void requireDriver() {

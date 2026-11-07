@@ -4,53 +4,43 @@ server:
 spring:
   application:
     name: gateway-service
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: ${DB_PASSWORD}
+  config:
+    import:
+      - optional:nacos:ta-common.yaml?group=TA_GROUP&refreshEnabled=true
   cloud:
     nacos:
-      discovery:
-        server-addr: localhost:8848
-    sentinel:
-      transport:
-        dashboard: localhost:8089
-      eager: true
-      http-method-specify: true
-    gateway:
-      server:
-        webflux:
-          routes:
-            - id: user-service
-              uri: lb://user-service
-              predicates:
-                - Path=/api/auth/**,/api/user/**,/api/driver/**,/api/admin/**
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+      gateway:
+        server:
+          webflux:
+            routes:
+              - id: user-service
+                uri: lb://user-service
+                predicates:
+                  - Path=/api/auth/**,/api/user/**,/api/driver/**,/api/admin/**
 
-            - id: location-service
-              uri: lb://location-service
-              predicates:
-                - Path=/api/location/**
+              - id: location-service
+                uri: lb://location-service
+                predicates:
+                  - Path=/api/location/**
 
-            - id: payment-service
-              uri: lb://payment-service
-              predicates:
-                - Path=/api/wallet/**
+              - id: payment-service
+                uri: lb://payment-service
+                predicates:
+                  - Path=/api/wallet/**
 
-            - id: order-service
-              uri: lb://order-service
-              predicates:
-                - Path=/api/order/**
+              - id: order-service
+                uri: lb://order-service
+                predicates:
+                  - Path=/api/order/**
 
-            # WebSocket 不走 /api 前缀，需用 lb:ws 形式让网关完成协议升级
-            - id: push-service-ws
-              uri: lb:ws://push-service
-              predicates:
-                - Path=/ws
+              # WebSocket 不走 /api 前缀，需用 lb:ws 形式让网关完成协议升级
+              - id: push-service-ws
+                uri: lb:ws://push-service
+                predicates:
+                  - Path=/ws
 app:
-  jwt:
-    secret: ${JWT_DEV_SECRET}
-    expiration: 43200000
   uri:
     white-list:
       - "/api/auth/login"

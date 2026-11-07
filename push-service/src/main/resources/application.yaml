@@ -4,21 +4,10 @@ server:
 spring:
   application:
     name: push-service
-  profiles:
-    active: dev
+  config:
+    import:
+      - optional:nacos:ta-common.yaml?group=TA_GROUP&refreshEnabled=true
   cloud:
     nacos:
-      discovery:
-        server-addr: localhost:8848
-    sentinel:
-      transport:
-        dashboard: localhost:8089
-      eager: true
-      http-method-specify: true
-
-app:
-  auth:
-    mode: gateway
-  jwt:
-    secret: ${ta.jwt.secret}
-    expiration: 43200000  # 12小时 = 12 * 60 * 60 * 1000
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}

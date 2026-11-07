@@ -13,6 +13,7 @@ public enum ErrorCode {
     TOO_MANY_REQUESTS(429, "too many requests"),
     ACCOUNT_LOCKED(423, "account locked"),
     INTERNAL_ERROR(500, "internal error"),
+    SERVICE_UNAVAILABLE(503, "service unavailable"),
 
     BUSINESS_ERROR(1000,"business error");
 
