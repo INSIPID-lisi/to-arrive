@@ -1,14 +1,14 @@
-package com.insipidknight.user.service;
+package com.insipidknight.toarrive.user.service;
 
 import com.insipidknight.toarrive.common.exception.BusinessException;
 import com.insipidknight.toarrive.common.util.MaskUtil;
-import com.insipidknight.user.dto.UpdateProfileDTO;
-import com.insipidknight.user.entity.User;
-import com.insipidknight.user.entity.UserProfile;
-import com.insipidknight.user.mapper.AuthMapper;
-import com.insipidknight.user.mapper.UserProfileMapper;
-import com.insipidknight.user.vo.UserBriefVO;
-import com.insipidknight.user.vo.UserProfileVO;
+import com.insipidknight.toarrive.user.dto.UpdateProfileDTO;
+import com.insipidknight.toarrive.user.entity.User;
+import com.insipidknight.toarrive.user.entity.UserProfile;
+import com.insipidknight.toarrive.user.mapper.AuthMapper;
+import com.insipidknight.toarrive.user.mapper.UserProfileMapper;
+import com.insipidknight.toarrive.user.vo.UserBriefVO;
+import com.insipidknight.toarrive.user.vo.UserProfileVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

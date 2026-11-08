@@ -1,6 +1,6 @@
-package com.insipidknight.user.dto;
+package com.insipidknight.toarrive.user.dto;
 
-import com.insipidknight.user.entity.enums.Gender;
+import com.insipidknight.toarrive.user.entity.enums.Gender;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 

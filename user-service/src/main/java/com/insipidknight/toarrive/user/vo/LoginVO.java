@@ -1,4 +1,4 @@
-package com.insipidknight.user.vo;
+package com.insipidknight.toarrive.user.vo;
 
 
 import lombok.Data;

@@ -1,8 +1,8 @@
-package com.insipidknight.user.vo;
+package com.insipidknight.toarrive.user.vo;
 
-import com.insipidknight.user.entity.Driver;
-import com.insipidknight.user.entity.enums.VerifyStatus;
-import com.insipidknight.user.entity.enums.WorkStatus;
+import com.insipidknight.toarrive.user.entity.Driver;
+import com.insipidknight.toarrive.user.entity.enums.VerifyStatus;
+import com.insipidknight.toarrive.user.entity.enums.WorkStatus;
 import lombok.Data;
 
 @Data

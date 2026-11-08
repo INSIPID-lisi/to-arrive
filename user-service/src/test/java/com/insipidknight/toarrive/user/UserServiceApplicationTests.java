@@ -1,4 +1,4 @@
-package com.insipidknight.user;
+package com.insipidknight.toarrive.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
