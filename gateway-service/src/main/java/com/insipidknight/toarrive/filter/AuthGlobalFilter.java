@@ -3,6 +3,7 @@ package com.insipidknight.toarrive.filter;
 import com.insipidknight.toarrive.common.Result;
 import com.insipidknight.toarrive.common.auth.AuthHeaders;
 import com.insipidknight.toarrive.common.auth.AuthRedisKeys;
+import com.insipidknight.toarrive.common.auth.SigningHeaders;
 import com.insipidknight.toarrive.common.exception.ErrorCode;
 import com.insipidknight.toarrive.common.util.JwtUtil;
 import com.insipidknight.toarrive.config.AuthUriProperties;
@@ -64,10 +65,10 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         PathContainer path = request.getPath().pathWithinApplication();
 
-        // 预检请求与登录/注册白名单直接放行
+        // 预检请求与登录/注册白名单直接放行，但必须先清掉客户端自带的身份头
         if (request.getMethod() == HttpMethod.OPTIONS
                 || whiteList.stream().anyMatch(pattern -> pattern.matches(path))) {
-            return chain.filter(exchange);
+            return chain.filter(exchange.mutate().request(stripIdentity(request)).build());
         }
 
         Claims claims = jwtUtil.parseToken(resolveToken(request));
@@ -142,6 +143,19 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             builder.header(AuthHeaders.USER_ROLE, role);
         }
         return builder.build();
+    }
+
+    private ServerHttpRequest stripIdentity(ServerHttpRequest request) {
+        return request.mutate()
+                .headers(headers -> {
+                    headers.remove(AuthHeaders.USER_ID);
+                    headers.remove(AuthHeaders.USER_UID);
+                    headers.remove(AuthHeaders.USER_ROLE);
+                    headers.remove(AuthHeaders.TOKEN_ID);
+                    headers.remove(SigningHeaders.GATEWAY_TIMESTAMP);
+                    headers.remove(SigningHeaders.GATEWAY_SIGNATURE);
+                })
+                .build();
     }
 
     private boolean versionMatches(String current, Number tokenVersion) {

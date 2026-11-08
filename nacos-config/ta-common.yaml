@@ -32,6 +32,24 @@ spring:
 app:
   auth:
     mode: gateway
+  security:
+    # 网关 -> 下游：签名里绑定 method + path + userId + timestamp
+    gateway-signature:
+      secret: ${GATEWAY_SIGNING_SECRET:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx}
+      max-clock-skew: 60s
+    # 服务 -> 服务：签名里绑定调用方 + method + path + timestamp
+    internal-auth:
+      secret: ${INTERNAL_SIGNING_SECRET:yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy}
+      max-clock-skew: 60s
+      # 调用方只能访问这里列出的下游路径前缀，缺失即拒绝
+      allowed-calls:
+        order-service:
+          - /internal/user
+          - /internal/payment
+          - /internal/push
+          - /internal/location
+        user-service:
+          - /internal/location
   http:
     pool:
       max-total: 100

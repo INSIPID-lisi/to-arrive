@@ -11,39 +11,39 @@ spring:
     nacos:
       config:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
-      gateway:
-        server:
-          webflux:
-            httpclient:
-              # 网关转发到下游的超时，避免下游变慢时拖住网关连接
-              connect-timeout: 1000
-              response-timeout: 5s
-            routes:
-              - id: user-service
-                uri: lb://user-service
-                predicates:
-                  - Path=/api/auth/**,/api/user/**,/api/driver/**,/api/admin/**
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            # 网关转发到下游的超时，避免下游变慢时拖住网关连接
+            connect-timeout: 1000
+            response-timeout: 5s
+          routes:
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/auth/**,/api/user/**,/api/driver/**,/api/admin/**
 
-              - id: location-service
-                uri: lb://location-service
-                predicates:
-                  - Path=/api/location/**
+            - id: location-service
+              uri: lb://location-service
+              predicates:
+                - Path=/api/location/**
 
-              - id: payment-service
-                uri: lb://payment-service
-                predicates:
-                  - Path=/api/wallet/**
+            - id: payment-service
+              uri: lb://payment-service
+              predicates:
+                - Path=/api/wallet/**
 
-              - id: order-service
-                uri: lb://order-service
-                predicates:
-                  - Path=/api/order/**
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api/order/**
 
-              # WebSocket 不走 /api 前缀，需用 lb:ws 形式让网关完成协议升级
-              - id: push-service-ws
-                uri: lb:ws://push-service
-                predicates:
-                  - Path=/ws
+            # WebSocket 不走 /api 前缀，需用 lb:ws 形式让网关完成协议升级
+            - id: push-service-ws
+              uri: lb:ws://push-service
+              predicates:
+                - Path=/ws
 app:
   uri:
     white-list:
