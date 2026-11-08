@@ -1,40 +1,26 @@
 server:
   port: 8083
+
 spring:
   application:
     name: payment-service
-  profiles:
-    active: dev
+  config:
+    import:
+      - optional:nacos:ta-common.yaml?group=TA_GROUP&refreshEnabled=true
+  cloud:
+    nacos:
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
   datasource:
     url: jdbc:mysql://${ta.db.host}:${ta.db.port}/${ta.db.name}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: ${ta.db.username}
     password: ${ta.db.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: ${ta.redis.password}
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-          max-wait: 1000ms
-  cloud:
-    nacos:
-      discovery:
-        server-addr: localhost:8848
-    sentinel:
-      transport:
-        dashboard: localhost:8089
-      eager: true
-      http-method-specify: true
+
 app:
-  auth:
-    mode: gateway
-  jwt:
-    secret: ${ta.jwt.secret}
-    expiration: 43200000  # 12小时 = 12 * 60 * 60 * 1000
   commission:
     rate: 0.20            # 平台抽成比例，20%
+
+ta:
+  db:
+    name: payment_db

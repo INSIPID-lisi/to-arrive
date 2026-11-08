@@ -1,3 +1,0 @@
-ta:
-  jwt:
-    secret: ${JWT_DEV_SECRET}

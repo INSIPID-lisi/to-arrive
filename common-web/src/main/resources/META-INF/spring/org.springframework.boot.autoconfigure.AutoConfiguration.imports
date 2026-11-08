@@ -1,1 +1,3 @@
 com.insipidknight.toarrive.common.autoconfigure.CommonWebAutoConfiguration
+com.insipidknight.toarrive.common.autoconfigure.InternalHttpClientAutoConfiguration
+com.insipidknight.toarrive.common.autoconfigure.ServiceIsolationAutoConfiguration

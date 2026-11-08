@@ -4,23 +4,20 @@ server:
 spring:
   application:
     name: gateway-service
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: ${DB_PASSWORD}
+  config:
+    import:
+      - optional:nacos:ta-common.yaml?group=TA_GROUP&refreshEnabled=true
   cloud:
     nacos:
-      discovery:
-        server-addr: localhost:8848
-    sentinel:
-      transport:
-        dashboard: localhost:8089
-      eager: true
-      http-method-specify: true
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
     gateway:
       server:
         webflux:
+          httpclient:
+            # 网关转发到下游的超时，避免下游变慢时拖住网关连接
+            connect-timeout: 1000
+            response-timeout: 5s
           routes:
             - id: user-service
               uri: lb://user-service
@@ -48,9 +45,6 @@ spring:
               predicates:
                 - Path=/ws
 app:
-  jwt:
-    secret: ${JWT_DEV_SECRET}
-    expiration: 43200000
   uri:
     white-list:
       - "/api/auth/login"
