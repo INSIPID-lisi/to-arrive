@@ -1,7 +1,7 @@
-package com.insipidknight.toarrive.user.vo;
+package com.insipidknight.user.vo;
 
-import com.insipidknight.toarrive.user.entity.Driver;
-import com.insipidknight.toarrive.user.entity.enums.VerifyStatus;
+import com.insipidknight.user.entity.Driver;
+import com.insipidknight.user.entity.enums.VerifyStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;

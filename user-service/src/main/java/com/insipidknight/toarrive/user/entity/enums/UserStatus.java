@@ -1,4 +1,4 @@
-package com.insipidknight.toarrive.user.entity.enums;
+package com.insipidknight.user.entity.enums;
 
 import com.baomidou.mybatisplus.annotation.IEnum;
 import lombok.Getter;

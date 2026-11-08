@@ -1,8 +1,8 @@
-package com.insipidknight.toarrive.user.mapper;
+package com.insipidknight.user.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.insipidknight.toarrive.user.entity.UserProfile;
+import com.insipidknight.user.entity.UserProfile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

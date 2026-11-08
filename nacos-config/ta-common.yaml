@@ -1,0 +1,50 @@
+# 所有微服务共享的基础配置
+# Nacos: dataId=ta-common.yaml, group=TA_GROUP, 格式=YAML
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:localhost:8089}
+      eager: true
+      http-method-specify: true
+  http:
+    clients:
+      # 内部调用统一使用 Apache HttpClient5
+      imperative:
+        factory: http-components
+      connect-timeout: 1s
+      read-timeout: 3s
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${DB_PASSWORD}
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 1000ms
+
+app:
+  auth:
+    mode: gateway
+  http:
+    pool:
+      max-total: 100
+      max-per-route: 20
+      connection-request-timeout: 1s
+      response-timeout: 5s
+  jwt:
+    secret: ${JWT_DEV_SECRET}
+    expiration: 43200000
+
+ta:
+  db:
+    host: ${TA_DB_HOST:localhost}
+    port: ${TA_DB_PORT:3307}
+    username: ${TA_DB_USERNAME:root}
+    password: ${DB_PASSWORD}

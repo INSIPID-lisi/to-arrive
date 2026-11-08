@@ -1,4 +1,4 @@
-package com.insipidknight.toarrive.user.dto;
+package com.insipidknight.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,10 +1,10 @@
-package com.insipidknight.toarrive.user.vo;
+package com.insipidknight.user.vo;
 
 import com.insipidknight.toarrive.common.util.MaskUtil;
-import com.insipidknight.toarrive.user.entity.User;
-import com.insipidknight.toarrive.user.entity.UserProfile;
+import com.insipidknight.user.entity.User;
+import com.insipidknight.user.entity.UserProfile;
 import com.insipidknight.toarrive.common.enums.UserRole;
-import com.insipidknight.toarrive.user.entity.enums.UserStatus;
+import com.insipidknight.user.entity.enums.UserStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;

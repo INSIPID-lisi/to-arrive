@@ -1,8 +1,8 @@
-package com.insipidknight.toarrive.user.vo;
+package com.insipidknight.user.vo;
 
-import com.insipidknight.toarrive.user.entity.enums.Gender;
+import com.insipidknight.user.entity.enums.Gender;
 import com.insipidknight.toarrive.common.enums.UserRole;
-import com.insipidknight.toarrive.user.entity.enums.UserStatus;
+import com.insipidknight.user.entity.enums.UserStatus;
 import lombok.Data;
 
 @Data

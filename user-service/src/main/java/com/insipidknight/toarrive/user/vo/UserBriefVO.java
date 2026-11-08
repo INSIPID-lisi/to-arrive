@@ -1,4 +1,4 @@
-package com.insipidknight.toarrive.user.vo;
+package com.insipidknight.user.vo;
 
 import com.insipidknight.toarrive.common.enums.UserRole;
 import lombok.Data;

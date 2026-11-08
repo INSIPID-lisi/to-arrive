@@ -1,4 +1,4 @@
-package com.insipidknight.toarrive.user.entity;
+package com.insipidknight.user.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.insipidknight.toarrive.common.enums.UserRole;
-import com.insipidknight.toarrive.user.entity.enums.UserStatus;
+import com.insipidknight.user.entity.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
